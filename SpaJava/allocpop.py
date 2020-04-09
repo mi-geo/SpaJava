@@ -1,29 +1,94 @@
-import os
+import geopandas
+import rasterio
+import matplotlib.pyplot as plt
+import gdal
 import numpy as np
-from osgeo import ogr, gdal
-import geopanda
-import subprocess
+from osgeo import gdal
+from osgeo import ogr
+from osgeo import gdalconst
 
-# target: 500 rows
+class JavPopEnvi(object):
+    '''
+    The purpose of this class is supposed to preprocess and view the data. It has several main functions: 
+        read or show the polygons
+        generate the vector(shapefile) that we need
+        rasterize polygons, which is the final unit of analysis
+    note: I've stucked in the rasterization part for weeks, that's why I'm going to use an alternative methods in the next a couple of days
+    '''
+    def __init__ (self):
+    '''
+    Path of the files
+    '''
+        self.EjSpP = '.\Data\EastJava_Kec.shp'      
+        self.BuiltUpSpP = '.\Data\Kec_buffer.shp'
+        self.BuiltDataP = '.\Data\BuiltData.shp'
+        self.BuiltRasterP = '.\Data\BuiltR.tif'
+    
+    def DfRead(self, file = self.EjSpP, show = True)
+    '''
+    use geopanda to read the file in data folder
+    show the shape file is required
+    return a GeoDataFrame  
+    '''
+        fileDf = geopandas.read_file(file)
+        if show == True
+            fileDf.plot(figsize=(10, 10), alpha=0.5, edgecolor='k')
+        return fileDf
+    
+    def DataClean(self, path):
+    '''
+    cleaning the polygon data and delete unnessesary values
+    return cleaned polygons, with 1 single col
+    '''
+        data = DfRead(path)
+        data = data[['OBJECTID','geometry']]
+        return data
+    
+    def JavInt(self,EjSp = self.EjSp, BuiltUpSp = self.BuiltUpSp ):
+    '''
+    intsect two shapefiles:
+        EjSp is the 
+        BuiltUpSp is the file 
+    return the required
+    '''
+        BuiltUpSp = self.DataClean(BuiltUpSp)
+        BuiltData = geopandas.overlay(EjSp, BuiltUpSp, how='intersection')
+        return BuiltData
+    
+    def JavShow(self,bp):
+        bp.plot(figsize=(10, 10), alpha=0.5, edgecolor='k')
+        return
+    
+    def JavConcert():
+        '''
+        '''
+        
+    def ConvJavRaster(self, size = 100):
+        
+        raster_path = self.'BuiltData.tif'
+        shapefile = self.BuiltData.shp'
+        # 1) opening the shapefile    
+        source_ds = ogr.Open(shapefile)
+        source_layer = source_ds.GetLayer()
 
-class PopEnvi(object):
-    '''
-    The basic layer, that could distribute values into cells. 
-    Get Raster of Population, and allocate data in new data...
-    The target of this class is to validate the input data and see if they could satisfiy our requirement. 
-    '''
-    def __init__ (InputVector = 'VectorName.shp',OutputImage = 'Result.tif',RefImage = 'Image_Name.tif',gdalformat = 'GTiff'):
-    '''
-    basic attributes of this image
-    '''
-        self.size = 100*100
-        self.value = 1000    
+        # 2) Creating the destination raster data source
+        pixelWidth = pixelHeight = size 
+        x_min, x_max, y_min, y_max = source_layer.GetExtent()
+        cols = int((x_max - x_min) / pixelHeight)
+        rows = int((y_max - y_min) / pixelWidth)
+        target_ds = gdal.GetDriverByName('GTiff').Create(raster_path, cols, rows, 1,  gdal.GDT_Float64) ##COMMENT 2
+        target_ds.SetGeoTransform((x_min, pixelWidth, 0, y_max, 0, -pixelHeight))
+        band = target_ds.GetRasterBand(1)
+        NoData_value = -99
+        burnVal = 0
+        band.SetNoDataValue(NoData_value)
+        band.FlushCache()
+        gdal.RasterizeLayer(target_ds, [1], source_layer,burn_values=[burnVal] )#options=["ATTRIBUTE=POP_CHANGE"])
+        return
 
-        datatype = gdal.GDT_Byte
-        burnVal = 1 #value for the output image pixels
-
-        self.type = "jpg"
-        self.type2 = "shp"
+    
+    
+class JavAnalysis(object):
 
     def vadata(self, data1):
         '''
@@ -37,39 +102,6 @@ class PopEnvi(object):
     package: conda install GDAL
     
     '''
-
-    def prepareTIF(self, size <= 1000 ):
-        '''
-        turn a shape file to TIFF. Value of each pixcel representing the percentage of built-up area (0-1)
-        return: tiff file
-        '''
-        # Get projection info from reference image
-        Image = gdal.Open(self.RefImage, gdal.GA_ReadOnly)
-        # Open Shapefile
-        Shapefile = ogr.Open(self.InputVector)
-        Shapefile_layer = Shapefile.GetLayer()
-
-        # Rasterise
-        print("Rasterising shapefile...")
-        Output = gdal.GetDriverByName(gdalformat).Create(OutputImage, Image.RasterXSize, Image.RasterYSize, 1, datatype, options=['COMPRESS=DEFLATE']) 
-        Output.SetProjection(Image.GetProjectionRef())
-        Output.SetGeoTransform(Image.GetGeoTransform()) 
-
-        # Write data to band 1
-        Band = Output.GetRasterBand(1)
-        Band.SetNoDataValue(0)
-        gdal.RasterizeLayer(Output, [1], Shapefile_layer, burn_values=[burnVal])
-
-        # Close datasets
-        Band = None
-        Output = None
-        Image = None
-        Shapefile = None
-
-        # Build image overviews
-        subprocess.call("gdaladdo --config COMPRESS_OVERVIEW DEFLATE "+OutputImage+" 2 4 8 16 32 64", shell=True)       
-        return
-
         
     def getvalue (self, shape, method="easy" ):
         '''
@@ -128,24 +160,4 @@ class Grid():
 
    
     
-class settlement():
-    '''
-    each human settlement is a object in this case.
-    
-    '''
 
-    def __init__ ():
-        '''
-        basic attribute of each settlements
-        '''
-        self.pop61
-        self.pop71
-        self.pop80
-        self.poploss
-        
-    def rltloc ():
-        '''
-        basic function detact its spaital relation with the other settlements surrounding
-        '''
-        return
-    
