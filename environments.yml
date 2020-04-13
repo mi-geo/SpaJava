@@ -8,5 +8,6 @@ dependencies:
   - pdoc3
   - geopandas
   - matplotlib
+  - jupyter
   - scipy
 
