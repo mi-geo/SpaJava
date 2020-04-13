@@ -1,0 +1,1217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.5" />
+<title>SpaJava.allocpop API documentation</title>
+<meta name="description" content="The module is for data analysis in Java island." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>SpaJava.allocpop</code></h1>
+</header>
+<section id="section-intro">
+<p>The module is for data analysis in Java island.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#39;&#39;&#39;
+The module is for data analysis in Java island.
+&#39;&#39;&#39;
+import os
+import geopandas
+import matplotlib.pyplot as plt
+import numpy as np
+from osgeo import gdal
+from osgeo import ogr
+from scipy import ndimage
+
+class JavaPolygonPrepare():
+    &#39;&#39;&#39;
+    Purpose: preprocess and view the data. It has several main functions:
+        1. read or show the polygons
+        2. generate the vector(shapefile) that we need
+        3. rasterize polygons, which is the final unit of analysis
+    note: I&#39;ve stucked in the rasterization part for weeks, that&#39;s why I&#39;m going
+            to use an alternative methods in the next a couple of days
+    &#39;&#39;&#39;
+
+    def __init__(self):
+        &#39;&#39;&#39;
+        Path of the files
+            java_shp:          # data based on administrative divisions
+            builtup_shp:   # built-up area polygon,
+                              the area should contain final data
+            Built_DataP:   # allocated data, the polygon data that we are looking forward
+            built_rs ： # allocated data, rasterized.   (malfunctioning)
+        &#39;&#39;&#39;
+        self.java_shp = &#39;.\\Data\\EastJava_Kec.shp&#39;
+        self.builtup_shp = &#39;.\\Data\\Kec_buffer.shp&#39;
+        self.built_rs = &#39;.\\Data\\BuiltR.tif&#39;
+
+    def shp_read(self, file=None, show=True):
+        &#39;&#39;&#39;
+        use geopanda to read the shapefile in ./data folder
+        file:     path of the shp file
+        show the shape file is required
+        return       GeoDataFrame
+        &#39;&#39;&#39;
+        if file is None:
+            file = self.java_shp # self is an argument only available at function call time.
+            file_df = geopandas.read_file(file)
+            if show is True:
+                file_df.plot(figsize=(10, 10), alpha=0.5, edgecolor=&#39;k&#39;)
+        elif not os.path.isfile(file):
+            raise ValueError(&#34;Input not exist: {0}. I&#39;ll quit now.&#34;.format(file))
+        elif str(file)[-3:] != &#39;shp&#39;:
+            raise ValueError(&#34;Input should be shp, not a {0}. quit now.&#34;.format(file[-3:]))
+        else:
+            file_df = geopandas.read_file(file)
+            if show is True:
+                file_df.plot(figsize=(10, 10), alpha=0.5, edgecolor=&#39;k&#39;)
+        return file_df
+
+    def data_clean(self, path, show=False):
+        &#39;&#39;&#39;
+        cleaning the polygon data and delete unnessesary values
+        return cleaned polygons, with 1 single col
+        &#39;&#39;&#39;
+        data = self.shp_read(path, show=show)
+        data = data[[&#39;OBJECTID&#39;, &#39;geometry&#39;]]
+        return data
+
+    def intersect(self, java_shp=None, builtup_shp=None):
+        &#39;&#39;&#39;
+        intsect two shapefiles:
+            java_shp is the file 1
+            builtup_shp is file 2
+        return the required Spa file, our analysis shapefile
+        &#39;&#39;&#39;
+        if java_shp is None:
+            java_shp = self.data_clean(self.java_shp, show=False)
+        if builtup_shp is None:
+            builtup_shp = self.data_clean(self.builtup_shp, show=False)
+        builtup_shp = self.data_clean(builtup_shp)
+        int_data = geopandas.overlay(java_shp, builtup_shp, how=&#39;intersection&#39;)
+        return int_data
+
+    def fig_show(self, figure_file, figsize=(10, 10), alpha=0.5, edgecolor=&#39;k&#39;):
+        &#39;&#39;&#39;
+        plot the shapefile
+        &#39;&#39;&#39;
+        figure_file.plot(figsize=figsize, alpha=alpha, edgecolor=edgecolor)
+
+    def conv_raster(self, psize=100, shapefile=None, rasterloc=None, no_value=-999):
+        &#39;&#39;&#39;
+        ### malfunctioning
+        this fun is supposed to convert a shape file to raster, but somehow it failed.
+        shapefile: the actual shp file that we want to convert
+        rasterloc: path of the raster that we want to deposit
+        psize:   size of cell, unit is meter
+
+        return None
+        &#39;&#39;&#39;
+        if shapefile is None:
+            shapefile = self.builtup_shp # self is an argument only available at function call time.
+        if rasterloc is None:
+            rasterloc = self.built_rs
+
+        # 1. opening the shapefile
+        source_layer = ogr.Open(shapefile).GetLayer()
+
+        # 2. creating the format (empty) raster data source
+        x_min, x_max, y_min, y_max = source_layer.GetExtent()
+        cols = int((x_max - x_min) / psize)
+        rows = int((y_max - y_min) / psize)
+        target_ds = gdal.GetDriverByName(&#39;GTiff&#39;).Create(rasterloc,
+                                                         cols, rows, 1, gdal.GDT_Float64)
+        target_ds.SetGeoTransform((x_min, psize, 0, y_max, 0, -psize))
+        band = target_ds.GetRasterBand(1)
+        band.SetNoDataValue(no_value)
+        band.FlushCache()
+        raster = gdal.RasterizeLayer(target_ds, [1], source_layer,
+                                     burn_values=[0])#options=[&#34;ATTRIBUTE=POP_CHANGE&#34;])
+        return raster
+
+
+class JavaRasterPrepare():
+    &#39;&#39;&#39;
+    This class will initialize Raster analysis unit
+
+    &#39;&#39;&#39;
+    def __init__(self, JavPath=&#39;.\\Data\\popbdden.tif&#39;):
+        if JavPath is None:
+            self.raster = &#39;.\\Data\\popbdden.tif&#39;
+        else:
+            self.raster = JavPath       # the raster file that we adopt in this analysis
+        self.img = gdal.Open(self.raster).ReadAsArray()     # get the nd array matrix
+        self.img = np.where(self.img &lt; 0, 0, self.img)
+        self.size_y = self.img.shape[0]   # size on Y axis, which is num of rows
+        self.size_x = self.img.shape[1]   # size on X axis, which is num of colss
+
+    def total_pop(self, cellsize=100):
+        &#39;&#39;&#39;
+        Caculate total population
+        return a int number  , which should be between 20m - 30m
+        &#39;&#39;&#39;
+        img = self.img/cellsize
+        pop = img.sum()
+        return pop
+
+    def rectify_pop(self, pop):
+        &#39;&#39;&#39;
+        clean the raster data
+        to be continued....
+        &#39;&#39;&#39;
+        self.img = (self.img/self.img.sum())* pop
+
+    def raster_show(self, logarithm=True):
+        &#39;&#39;&#39;
+        Caculate total population
+        return a int number  , which should be between 20m - 30m
+        &#39;&#39;&#39;
+        figure = self.img
+        if logarithm is True:
+            figure = np.where(np.isnan(figure), 0, figure)
+            plt.imshow(np.log(figure+1))
+        else:
+            figure = np.where(figure == 0, np.NaN, figure)
+            plt.imshow(figure)
+
+    def neo_dilation(self, repeat=50):
+        &#39;&#39;&#39;
+        dilate the origin img without changing it into a binary one
+        warning: it takes a while to execute this func
+        return raster
+        &#39;&#39;&#39;
+        # binary_dilation with original value
+        img = self.img
+        img = np.where(np.isnan(img), 0, img)
+        size_y = self.size_y
+        size_x = self.size_x
+
+        # binary_dilation with original value
+        # img is a imgage where -9999 stand for NaN values
+        imgbw = img &gt; 0 # binary image
+        #img =np.where(img == -9999, np.NaN, img)         # reorganize img
+        imgbw_ex = ndimage.binary_dilation(imgbw, iterations=1)  # expansion first
+        imgbw_ring = imgbw_ex &gt; imgbw                   # detect the changes ....
+        img = np.where(img == 0, np.NaN, img)
+
+        for _ in range(repeat):
+            index = np.where(imgbw_ring)
+            length = len(index[0])
+            for k in range(length):
+                i = index[0][k]
+                j = index[1][k]
+                if i == size_y-1 or j == size_x-1:
+                    if not np.isnan(img[i-1, j]):
+                        img[i, j] = img[i-1, j]
+                    elif not np.isnan(img[i, j-1]):
+                        img[i, j] = img[i, j-1]
+                elif   i == 0 or j == 0:
+                    if not np.isnan(img[i+1, j]):
+                        img[i, j] = img[i+1, j]
+                    elif not np.isnan(img[i, j+1]):
+                        img[i, j] = img[i, j+1]
+                else:
+                    if not np.isnan(img[i+1, j]):
+                        img[i, j] = img[i+1, j]
+                    elif not np.isnan(img[i, j+1]):
+                        img[i, j] = img[i, j+1]
+                    elif not np.isnan(img[i-1, j]):
+                        img[i, j] = img[i-1, j]
+                    elif not np.isnan(img[i, j-1]):
+                        img[i, j] = img[i, j-1]
+            imgbw = np.where(np.isnan(img), 0, img) &gt; 0
+            imgbw_ex = ndimage.binary_dilation(imgbw, iterations=1)  # expansion first
+            imgbw_ring = imgbw_ex &gt; imgbw
+
+        self.img = np.where(np.isnan(img), 0, img)
+        return img
+
+    def block_split(self):
+        &#39;&#39;&#39;
+        split the raster, create a boundary (0) between too adjcent rasters blocks,
+        it provides a base binary map for future uses
+        do this step after neo_dilation
+        warning: it takes a while to run
+
+        return binary raster
+        &#39;&#39;&#39;
+        img = self.img.copy()
+        size_y = self.size_y
+        size_x = self.size_x
+        img_boundary_base = self.img.copy()   # the base map for future analysis....
+        for i in range(size_y-1):
+            for j in range(size_x-1):
+                if img[i, j] == 0:
+                    pass
+                elif img[i, j] != img[i+1, j]:
+                    img_boundary_base[i, j] = 0
+                elif img[i, j] != img[i, j+1]:
+                    img_boundary_base[i, j] = 0
+        img_boundary_bw = img_boundary_base &gt; 0
+        return img_boundary_bw
+
+    def smoothen_raster(self, img_boundary_bw, coresize=55, method_smooth=&#39;low&#39;):
+        &#39;&#39;&#39;
+        create a smoothened border between contigenous raster blocks
+        warning: it takes about 1 min to run
+        coresize: the heterogineous core in each block
+        method_smooth: two methods to smoothen the border:
+                       &#39;slow&#39; is slower, &#39;fast&#39; is more radical
+        img_boundary_bw: the binary map depict the boundaries, generated by  self.JavaSplit
+
+        return np.array
+        &#39;&#39;&#39;
+        # smoothing the value
+        img_s = self.img.copy()
+        img_boundary_t = img_boundary_bw   # the foundation of borders
+        img_binary = img_s &gt; 0
+
+        if coresize &lt; 50:
+            print(&#34;dangerous, super slow. The program will stop&#34;)
+            return img_s
+
+        for _ in range(60 - coresize):
+
+            img_boundary_t = ndimage.binary_erosion(img_boundary_t &gt; 0, iterations=1)
+            img_index = img_binary &gt; img_boundary_t
+            index = np.where(img_index)
+            length = len(index[0])
+            print(length)
+
+            for k in range(length):
+                i = index[0][k]
+                j = index[1][k]
+                if i &lt;= 0 or j &lt;= 0:
+                    pass
+                elif i &gt;= self.size_y-1 or j &gt;= self.size_x-1:
+                    pass
+                else:
+                    temp_9 = img_s[i-1:i+2, j-1:j+2]    #img_s[i, j],
+                    if img_s[i, j] - temp_9.mean() &lt; 5:
+                        pass
+                    elif method_smooth == &#39;slow&#39;:
+                        img_s[i, j] = temp_9.mean()
+                    elif method_smooth == &#39;fast&#39;:
+                        img_s[i, j] = img_s[i, j] + ((temp_9.max() - img_s[i, j])*0.4 +
+                                                     (temp_9.min() - img_s[i, j])*0.4)
+        return img_s
+
+    def neo_erosion_raster(self, img_boundary, coresize=55, show=True):
+        &#39;&#39;&#39;
+        to create the erosion unit of analysis
+        return the final raster that we want
+        &#39;&#39;&#39;
+        binary_boundary_base = img_boundary &gt; 0
+        img_core = ndimage.binary_erosion(binary_boundary_base, iterations=60-coresize)
+        if show is True:
+            plt.imshow(img_core)
+        img = self.img
+        img = np.where(np.isnan(img), 0, img)
+        img = img_core*img
+        return img
+
+
+class JavaRasterAnalysis():
+    &#39;&#39;&#39;
+    this case is on-hold. for doing raster analysis
+    &#39;&#39;&#39;
+    def __init__(self):
+        &#39;&#39;&#39;
+        if a function find the data doesn&#39;t satisfy our critirias,
+        return FALSE, otherwise, return either shp or raster, and
+        for raster, return the range of data (0:255, etc)
+        &#39;&#39;&#39;
+
+    def derivate(self):
+        &#39;&#39;&#39;
+        potential spatial ODE model
+        &#39;&#39;&#39;
+
+    def spatial_stats(self):
+        &#39;&#39;&#39;
+        potential spatial statistics
+        &#39;&#39;&#39;
+
+if __name__ == &#34;__main__&#34;:
+    print(&#39;it is on&#39;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="SpaJava.allocpop.JavaPolygonPrepare"><code class="flex name class">
+<span>class <span class="ident">JavaPolygonPrepare</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>Purpose: preprocess and view the data. It has several main functions:
+1. read or show the polygons
+2. generate the vector(shapefile) that we need
+3. rasterize polygons, which is the final unit of analysis
+note: I've stucked in the rasterization part for weeks, that's why I'm going
+to use an alternative methods in the next a couple of days</p>
+<p>Path of the files
+java_shp:
+# data based on administrative divisions
+builtup_shp:
+# built-up area polygon,
+the area should contain final data
+Built_DataP:
+# allocated data, the polygon data that we are looking forward
+built_rs ： # allocated data, rasterized.
+(malfunctioning)</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class JavaPolygonPrepare():
+    &#39;&#39;&#39;
+    Purpose: preprocess and view the data. It has several main functions:
+        1. read or show the polygons
+        2. generate the vector(shapefile) that we need
+        3. rasterize polygons, which is the final unit of analysis
+    note: I&#39;ve stucked in the rasterization part for weeks, that&#39;s why I&#39;m going
+            to use an alternative methods in the next a couple of days
+    &#39;&#39;&#39;
+
+    def __init__(self):
+        &#39;&#39;&#39;
+        Path of the files
+            java_shp:          # data based on administrative divisions
+            builtup_shp:   # built-up area polygon,
+                              the area should contain final data
+            Built_DataP:   # allocated data, the polygon data that we are looking forward
+            built_rs ： # allocated data, rasterized.   (malfunctioning)
+        &#39;&#39;&#39;
+        self.java_shp = &#39;.\\Data\\EastJava_Kec.shp&#39;
+        self.builtup_shp = &#39;.\\Data\\Kec_buffer.shp&#39;
+        self.built_rs = &#39;.\\Data\\BuiltR.tif&#39;
+
+    def shp_read(self, file=None, show=True):
+        &#39;&#39;&#39;
+        use geopanda to read the shapefile in ./data folder
+        file:     path of the shp file
+        show the shape file is required
+        return       GeoDataFrame
+        &#39;&#39;&#39;
+        if file is None:
+            file = self.java_shp # self is an argument only available at function call time.
+            file_df = geopandas.read_file(file)
+            if show is True:
+                file_df.plot(figsize=(10, 10), alpha=0.5, edgecolor=&#39;k&#39;)
+        elif not os.path.isfile(file):
+            raise ValueError(&#34;Input not exist: {0}. I&#39;ll quit now.&#34;.format(file))
+        elif str(file)[-3:] != &#39;shp&#39;:
+            raise ValueError(&#34;Input should be shp, not a {0}. quit now.&#34;.format(file[-3:]))
+        else:
+            file_df = geopandas.read_file(file)
+            if show is True:
+                file_df.plot(figsize=(10, 10), alpha=0.5, edgecolor=&#39;k&#39;)
+        return file_df
+
+    def data_clean(self, path, show=False):
+        &#39;&#39;&#39;
+        cleaning the polygon data and delete unnessesary values
+        return cleaned polygons, with 1 single col
+        &#39;&#39;&#39;
+        data = self.shp_read(path, show=show)
+        data = data[[&#39;OBJECTID&#39;, &#39;geometry&#39;]]
+        return data
+
+    def intersect(self, java_shp=None, builtup_shp=None):
+        &#39;&#39;&#39;
+        intsect two shapefiles:
+            java_shp is the file 1
+            builtup_shp is file 2
+        return the required Spa file, our analysis shapefile
+        &#39;&#39;&#39;
+        if java_shp is None:
+            java_shp = self.data_clean(self.java_shp, show=False)
+        if builtup_shp is None:
+            builtup_shp = self.data_clean(self.builtup_shp, show=False)
+        builtup_shp = self.data_clean(builtup_shp)
+        int_data = geopandas.overlay(java_shp, builtup_shp, how=&#39;intersection&#39;)
+        return int_data
+
+    def fig_show(self, figure_file, figsize=(10, 10), alpha=0.5, edgecolor=&#39;k&#39;):
+        &#39;&#39;&#39;
+        plot the shapefile
+        &#39;&#39;&#39;
+        figure_file.plot(figsize=figsize, alpha=alpha, edgecolor=edgecolor)
+
+    def conv_raster(self, psize=100, shapefile=None, rasterloc=None, no_value=-999):
+        &#39;&#39;&#39;
+        ### malfunctioning
+        this fun is supposed to convert a shape file to raster, but somehow it failed.
+        shapefile: the actual shp file that we want to convert
+        rasterloc: path of the raster that we want to deposit
+        psize:   size of cell, unit is meter
+
+        return None
+        &#39;&#39;&#39;
+        if shapefile is None:
+            shapefile = self.builtup_shp # self is an argument only available at function call time.
+        if rasterloc is None:
+            rasterloc = self.built_rs
+
+        # 1. opening the shapefile
+        source_layer = ogr.Open(shapefile).GetLayer()
+
+        # 2. creating the format (empty) raster data source
+        x_min, x_max, y_min, y_max = source_layer.GetExtent()
+        cols = int((x_max - x_min) / psize)
+        rows = int((y_max - y_min) / psize)
+        target_ds = gdal.GetDriverByName(&#39;GTiff&#39;).Create(rasterloc,
+                                                         cols, rows, 1, gdal.GDT_Float64)
+        target_ds.SetGeoTransform((x_min, psize, 0, y_max, 0, -psize))
+        band = target_ds.GetRasterBand(1)
+        band.SetNoDataValue(no_value)
+        band.FlushCache()
+        raster = gdal.RasterizeLayer(target_ds, [1], source_layer,
+                                     burn_values=[0])#options=[&#34;ATTRIBUTE=POP_CHANGE&#34;])
+        return raster</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="SpaJava.allocpop.JavaPolygonPrepare.conv_raster"><code class="name flex">
+<span>def <span class="ident">conv_raster</span></span>(<span>self, psize=100, shapefile=None, rasterloc=None, no_value=-999)</span>
+</code></dt>
+<dd>
+<section class="desc"><h3 id="malfunctioning">malfunctioning</h3>
+<p>this fun is supposed to convert a shape file to raster, but somehow it failed.
+shapefile: the actual shp file that we want to convert
+rasterloc: path of the raster that we want to deposit
+psize:
+size of cell, unit is meter</p>
+<p>return None</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def conv_raster(self, psize=100, shapefile=None, rasterloc=None, no_value=-999):
+    &#39;&#39;&#39;
+    ### malfunctioning
+    this fun is supposed to convert a shape file to raster, but somehow it failed.
+    shapefile: the actual shp file that we want to convert
+    rasterloc: path of the raster that we want to deposit
+    psize:   size of cell, unit is meter
+
+    return None
+    &#39;&#39;&#39;
+    if shapefile is None:
+        shapefile = self.builtup_shp # self is an argument only available at function call time.
+    if rasterloc is None:
+        rasterloc = self.built_rs
+
+    # 1. opening the shapefile
+    source_layer = ogr.Open(shapefile).GetLayer()
+
+    # 2. creating the format (empty) raster data source
+    x_min, x_max, y_min, y_max = source_layer.GetExtent()
+    cols = int((x_max - x_min) / psize)
+    rows = int((y_max - y_min) / psize)
+    target_ds = gdal.GetDriverByName(&#39;GTiff&#39;).Create(rasterloc,
+                                                     cols, rows, 1, gdal.GDT_Float64)
+    target_ds.SetGeoTransform((x_min, psize, 0, y_max, 0, -psize))
+    band = target_ds.GetRasterBand(1)
+    band.SetNoDataValue(no_value)
+    band.FlushCache()
+    raster = gdal.RasterizeLayer(target_ds, [1], source_layer,
+                                 burn_values=[0])#options=[&#34;ATTRIBUTE=POP_CHANGE&#34;])
+    return raster</code></pre>
+</details>
+</dd>
+<dt id="SpaJava.allocpop.JavaPolygonPrepare.data_clean"><code class="name flex">
+<span>def <span class="ident">data_clean</span></span>(<span>self, path, show=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>cleaning the polygon data and delete unnessesary values
+return cleaned polygons, with 1 single col</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def data_clean(self, path, show=False):
+    &#39;&#39;&#39;
+    cleaning the polygon data and delete unnessesary values
+    return cleaned polygons, with 1 single col
+    &#39;&#39;&#39;
+    data = self.shp_read(path, show=show)
+    data = data[[&#39;OBJECTID&#39;, &#39;geometry&#39;]]
+    return data</code></pre>
+</details>
+</dd>
+<dt id="SpaJava.allocpop.JavaPolygonPrepare.fig_show"><code class="name flex">
+<span>def <span class="ident">fig_show</span></span>(<span>self, figure_file, figsize=(10, 10), alpha=0.5, edgecolor='k')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>plot the shapefile</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fig_show(self, figure_file, figsize=(10, 10), alpha=0.5, edgecolor=&#39;k&#39;):
+    &#39;&#39;&#39;
+    plot the shapefile
+    &#39;&#39;&#39;
+    figure_file.plot(figsize=figsize, alpha=alpha, edgecolor=edgecolor)</code></pre>
+</details>
+</dd>
+<dt id="SpaJava.allocpop.JavaPolygonPrepare.intersect"><code class="name flex">
+<span>def <span class="ident">intersect</span></span>(<span>self, java_shp=None, builtup_shp=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>intsect two shapefiles:
+java_shp is the file 1
+builtup_shp is file 2
+return the required Spa file, our analysis shapefile</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def intersect(self, java_shp=None, builtup_shp=None):
+    &#39;&#39;&#39;
+    intsect two shapefiles:
+        java_shp is the file 1
+        builtup_shp is file 2
+    return the required Spa file, our analysis shapefile
+    &#39;&#39;&#39;
+    if java_shp is None:
+        java_shp = self.data_clean(self.java_shp, show=False)
+    if builtup_shp is None:
+        builtup_shp = self.data_clean(self.builtup_shp, show=False)
+    builtup_shp = self.data_clean(builtup_shp)
+    int_data = geopandas.overlay(java_shp, builtup_shp, how=&#39;intersection&#39;)
+    return int_data</code></pre>
+</details>
+</dd>
+<dt id="SpaJava.allocpop.JavaPolygonPrepare.shp_read"><code class="name flex">
+<span>def <span class="ident">shp_read</span></span>(<span>self, file=None, show=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>use geopanda to read the shapefile in ./data folder
+file:
+path of the shp file
+show the shape file is required
+return
+GeoDataFrame</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def shp_read(self, file=None, show=True):
+    &#39;&#39;&#39;
+    use geopanda to read the shapefile in ./data folder
+    file:     path of the shp file
+    show the shape file is required
+    return       GeoDataFrame
+    &#39;&#39;&#39;
+    if file is None:
+        file = self.java_shp # self is an argument only available at function call time.
+        file_df = geopandas.read_file(file)
+        if show is True:
+            file_df.plot(figsize=(10, 10), alpha=0.5, edgecolor=&#39;k&#39;)
+    elif not os.path.isfile(file):
+        raise ValueError(&#34;Input not exist: {0}. I&#39;ll quit now.&#34;.format(file))
+    elif str(file)[-3:] != &#39;shp&#39;:
+        raise ValueError(&#34;Input should be shp, not a {0}. quit now.&#34;.format(file[-3:]))
+    else:
+        file_df = geopandas.read_file(file)
+        if show is True:
+            file_df.plot(figsize=(10, 10), alpha=0.5, edgecolor=&#39;k&#39;)
+    return file_df</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="SpaJava.allocpop.JavaRasterAnalysis"><code class="flex name class">
+<span>class <span class="ident">JavaRasterAnalysis</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>this case is on-hold. for doing raster analysis</p>
+<p>if a function find the data doesn't satisfy our critirias,
+return FALSE, otherwise, return either shp or raster, and
+for raster, return the range of data (0:255, etc)</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class JavaRasterAnalysis():
+    &#39;&#39;&#39;
+    this case is on-hold. for doing raster analysis
+    &#39;&#39;&#39;
+    def __init__(self):
+        &#39;&#39;&#39;
+        if a function find the data doesn&#39;t satisfy our critirias,
+        return FALSE, otherwise, return either shp or raster, and
+        for raster, return the range of data (0:255, etc)
+        &#39;&#39;&#39;
+
+    def derivate(self):
+        &#39;&#39;&#39;
+        potential spatial ODE model
+        &#39;&#39;&#39;
+
+    def spatial_stats(self):
+        &#39;&#39;&#39;
+        potential spatial statistics
+        &#39;&#39;&#39;</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="SpaJava.allocpop.JavaRasterAnalysis.derivate"><code class="name flex">
+<span>def <span class="ident">derivate</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>potential spatial ODE model</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def derivate(self):
+    &#39;&#39;&#39;
+    potential spatial ODE model
+    &#39;&#39;&#39;</code></pre>
+</details>
+</dd>
+<dt id="SpaJava.allocpop.JavaRasterAnalysis.spatial_stats"><code class="name flex">
+<span>def <span class="ident">spatial_stats</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>potential spatial statistics</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def spatial_stats(self):
+    &#39;&#39;&#39;
+    potential spatial statistics
+    &#39;&#39;&#39;</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="SpaJava.allocpop.JavaRasterPrepare"><code class="flex name class">
+<span>class <span class="ident">JavaRasterPrepare</span></span>
+<span>(</span><span>JavPath='.\\Data\\popbdden.tif')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>This class will initialize Raster analysis unit</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class JavaRasterPrepare():
+    &#39;&#39;&#39;
+    This class will initialize Raster analysis unit
+
+    &#39;&#39;&#39;
+    def __init__(self, JavPath=&#39;.\\Data\\popbdden.tif&#39;):
+        if JavPath is None:
+            self.raster = &#39;.\\Data\\popbdden.tif&#39;
+        else:
+            self.raster = JavPath       # the raster file that we adopt in this analysis
+        self.img = gdal.Open(self.raster).ReadAsArray()     # get the nd array matrix
+        self.img = np.where(self.img &lt; 0, 0, self.img)
+        self.size_y = self.img.shape[0]   # size on Y axis, which is num of rows
+        self.size_x = self.img.shape[1]   # size on X axis, which is num of colss
+
+    def total_pop(self, cellsize=100):
+        &#39;&#39;&#39;
+        Caculate total population
+        return a int number  , which should be between 20m - 30m
+        &#39;&#39;&#39;
+        img = self.img/cellsize
+        pop = img.sum()
+        return pop
+
+    def rectify_pop(self, pop):
+        &#39;&#39;&#39;
+        clean the raster data
+        to be continued....
+        &#39;&#39;&#39;
+        self.img = (self.img/self.img.sum())* pop
+
+    def raster_show(self, logarithm=True):
+        &#39;&#39;&#39;
+        Caculate total population
+        return a int number  , which should be between 20m - 30m
+        &#39;&#39;&#39;
+        figure = self.img
+        if logarithm is True:
+            figure = np.where(np.isnan(figure), 0, figure)
+            plt.imshow(np.log(figure+1))
+        else:
+            figure = np.where(figure == 0, np.NaN, figure)
+            plt.imshow(figure)
+
+    def neo_dilation(self, repeat=50):
+        &#39;&#39;&#39;
+        dilate the origin img without changing it into a binary one
+        warning: it takes a while to execute this func
+        return raster
+        &#39;&#39;&#39;
+        # binary_dilation with original value
+        img = self.img
+        img = np.where(np.isnan(img), 0, img)
+        size_y = self.size_y
+        size_x = self.size_x
+
+        # binary_dilation with original value
+        # img is a imgage where -9999 stand for NaN values
+        imgbw = img &gt; 0 # binary image
+        #img =np.where(img == -9999, np.NaN, img)         # reorganize img
+        imgbw_ex = ndimage.binary_dilation(imgbw, iterations=1)  # expansion first
+        imgbw_ring = imgbw_ex &gt; imgbw                   # detect the changes ....
+        img = np.where(img == 0, np.NaN, img)
+
+        for _ in range(repeat):
+            index = np.where(imgbw_ring)
+            length = len(index[0])
+            for k in range(length):
+                i = index[0][k]
+                j = index[1][k]
+                if i == size_y-1 or j == size_x-1:
+                    if not np.isnan(img[i-1, j]):
+                        img[i, j] = img[i-1, j]
+                    elif not np.isnan(img[i, j-1]):
+                        img[i, j] = img[i, j-1]
+                elif   i == 0 or j == 0:
+                    if not np.isnan(img[i+1, j]):
+                        img[i, j] = img[i+1, j]
+                    elif not np.isnan(img[i, j+1]):
+                        img[i, j] = img[i, j+1]
+                else:
+                    if not np.isnan(img[i+1, j]):
+                        img[i, j] = img[i+1, j]
+                    elif not np.isnan(img[i, j+1]):
+                        img[i, j] = img[i, j+1]
+                    elif not np.isnan(img[i-1, j]):
+                        img[i, j] = img[i-1, j]
+                    elif not np.isnan(img[i, j-1]):
+                        img[i, j] = img[i, j-1]
+            imgbw = np.where(np.isnan(img), 0, img) &gt; 0
+            imgbw_ex = ndimage.binary_dilation(imgbw, iterations=1)  # expansion first
+            imgbw_ring = imgbw_ex &gt; imgbw
+
+        self.img = np.where(np.isnan(img), 0, img)
+        return img
+
+    def block_split(self):
+        &#39;&#39;&#39;
+        split the raster, create a boundary (0) between too adjcent rasters blocks,
+        it provides a base binary map for future uses
+        do this step after neo_dilation
+        warning: it takes a while to run
+
+        return binary raster
+        &#39;&#39;&#39;
+        img = self.img.copy()
+        size_y = self.size_y
+        size_x = self.size_x
+        img_boundary_base = self.img.copy()   # the base map for future analysis....
+        for i in range(size_y-1):
+            for j in range(size_x-1):
+                if img[i, j] == 0:
+                    pass
+                elif img[i, j] != img[i+1, j]:
+                    img_boundary_base[i, j] = 0
+                elif img[i, j] != img[i, j+1]:
+                    img_boundary_base[i, j] = 0
+        img_boundary_bw = img_boundary_base &gt; 0
+        return img_boundary_bw
+
+    def smoothen_raster(self, img_boundary_bw, coresize=55, method_smooth=&#39;low&#39;):
+        &#39;&#39;&#39;
+        create a smoothened border between contigenous raster blocks
+        warning: it takes about 1 min to run
+        coresize: the heterogineous core in each block
+        method_smooth: two methods to smoothen the border:
+                       &#39;slow&#39; is slower, &#39;fast&#39; is more radical
+        img_boundary_bw: the binary map depict the boundaries, generated by  self.JavaSplit
+
+        return np.array
+        &#39;&#39;&#39;
+        # smoothing the value
+        img_s = self.img.copy()
+        img_boundary_t = img_boundary_bw   # the foundation of borders
+        img_binary = img_s &gt; 0
+
+        if coresize &lt; 50:
+            print(&#34;dangerous, super slow. The program will stop&#34;)
+            return img_s
+
+        for _ in range(60 - coresize):
+
+            img_boundary_t = ndimage.binary_erosion(img_boundary_t &gt; 0, iterations=1)
+            img_index = img_binary &gt; img_boundary_t
+            index = np.where(img_index)
+            length = len(index[0])
+            print(length)
+
+            for k in range(length):
+                i = index[0][k]
+                j = index[1][k]
+                if i &lt;= 0 or j &lt;= 0:
+                    pass
+                elif i &gt;= self.size_y-1 or j &gt;= self.size_x-1:
+                    pass
+                else:
+                    temp_9 = img_s[i-1:i+2, j-1:j+2]    #img_s[i, j],
+                    if img_s[i, j] - temp_9.mean() &lt; 5:
+                        pass
+                    elif method_smooth == &#39;slow&#39;:
+                        img_s[i, j] = temp_9.mean()
+                    elif method_smooth == &#39;fast&#39;:
+                        img_s[i, j] = img_s[i, j] + ((temp_9.max() - img_s[i, j])*0.4 +
+                                                     (temp_9.min() - img_s[i, j])*0.4)
+        return img_s
+
+    def neo_erosion_raster(self, img_boundary, coresize=55, show=True):
+        &#39;&#39;&#39;
+        to create the erosion unit of analysis
+        return the final raster that we want
+        &#39;&#39;&#39;
+        binary_boundary_base = img_boundary &gt; 0
+        img_core = ndimage.binary_erosion(binary_boundary_base, iterations=60-coresize)
+        if show is True:
+            plt.imshow(img_core)
+        img = self.img
+        img = np.where(np.isnan(img), 0, img)
+        img = img_core*img
+        return img</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="SpaJava.allocpop.JavaRasterPrepare.block_split"><code class="name flex">
+<span>def <span class="ident">block_split</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>split the raster, create a boundary (0) between too adjcent rasters blocks,
+it provides a base binary map for future uses
+do this step after neo_dilation
+warning: it takes a while to run</p>
+<p>return binary raster</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def block_split(self):
+    &#39;&#39;&#39;
+    split the raster, create a boundary (0) between too adjcent rasters blocks,
+    it provides a base binary map for future uses
+    do this step after neo_dilation
+    warning: it takes a while to run
+
+    return binary raster
+    &#39;&#39;&#39;
+    img = self.img.copy()
+    size_y = self.size_y
+    size_x = self.size_x
+    img_boundary_base = self.img.copy()   # the base map for future analysis....
+    for i in range(size_y-1):
+        for j in range(size_x-1):
+            if img[i, j] == 0:
+                pass
+            elif img[i, j] != img[i+1, j]:
+                img_boundary_base[i, j] = 0
+            elif img[i, j] != img[i, j+1]:
+                img_boundary_base[i, j] = 0
+    img_boundary_bw = img_boundary_base &gt; 0
+    return img_boundary_bw</code></pre>
+</details>
+</dd>
+<dt id="SpaJava.allocpop.JavaRasterPrepare.neo_dilation"><code class="name flex">
+<span>def <span class="ident">neo_dilation</span></span>(<span>self, repeat=50)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>dilate the origin img without changing it into a binary one
+warning: it takes a while to execute this func
+return raster</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def neo_dilation(self, repeat=50):
+    &#39;&#39;&#39;
+    dilate the origin img without changing it into a binary one
+    warning: it takes a while to execute this func
+    return raster
+    &#39;&#39;&#39;
+    # binary_dilation with original value
+    img = self.img
+    img = np.where(np.isnan(img), 0, img)
+    size_y = self.size_y
+    size_x = self.size_x
+
+    # binary_dilation with original value
+    # img is a imgage where -9999 stand for NaN values
+    imgbw = img &gt; 0 # binary image
+    #img =np.where(img == -9999, np.NaN, img)         # reorganize img
+    imgbw_ex = ndimage.binary_dilation(imgbw, iterations=1)  # expansion first
+    imgbw_ring = imgbw_ex &gt; imgbw                   # detect the changes ....
+    img = np.where(img == 0, np.NaN, img)
+
+    for _ in range(repeat):
+        index = np.where(imgbw_ring)
+        length = len(index[0])
+        for k in range(length):
+            i = index[0][k]
+            j = index[1][k]
+            if i == size_y-1 or j == size_x-1:
+                if not np.isnan(img[i-1, j]):
+                    img[i, j] = img[i-1, j]
+                elif not np.isnan(img[i, j-1]):
+                    img[i, j] = img[i, j-1]
+            elif   i == 0 or j == 0:
+                if not np.isnan(img[i+1, j]):
+                    img[i, j] = img[i+1, j]
+                elif not np.isnan(img[i, j+1]):
+                    img[i, j] = img[i, j+1]
+            else:
+                if not np.isnan(img[i+1, j]):
+                    img[i, j] = img[i+1, j]
+                elif not np.isnan(img[i, j+1]):
+                    img[i, j] = img[i, j+1]
+                elif not np.isnan(img[i-1, j]):
+                    img[i, j] = img[i-1, j]
+                elif not np.isnan(img[i, j-1]):
+                    img[i, j] = img[i, j-1]
+        imgbw = np.where(np.isnan(img), 0, img) &gt; 0
+        imgbw_ex = ndimage.binary_dilation(imgbw, iterations=1)  # expansion first
+        imgbw_ring = imgbw_ex &gt; imgbw
+
+    self.img = np.where(np.isnan(img), 0, img)
+    return img</code></pre>
+</details>
+</dd>
+<dt id="SpaJava.allocpop.JavaRasterPrepare.neo_erosion_raster"><code class="name flex">
+<span>def <span class="ident">neo_erosion_raster</span></span>(<span>self, img_boundary, coresize=55, show=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>to create the erosion unit of analysis
+return the final raster that we want</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def neo_erosion_raster(self, img_boundary, coresize=55, show=True):
+    &#39;&#39;&#39;
+    to create the erosion unit of analysis
+    return the final raster that we want
+    &#39;&#39;&#39;
+    binary_boundary_base = img_boundary &gt; 0
+    img_core = ndimage.binary_erosion(binary_boundary_base, iterations=60-coresize)
+    if show is True:
+        plt.imshow(img_core)
+    img = self.img
+    img = np.where(np.isnan(img), 0, img)
+    img = img_core*img
+    return img</code></pre>
+</details>
+</dd>
+<dt id="SpaJava.allocpop.JavaRasterPrepare.raster_show"><code class="name flex">
+<span>def <span class="ident">raster_show</span></span>(<span>self, logarithm=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Caculate total population
+return a int number
+, which should be between 20m - 30m</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def raster_show(self, logarithm=True):
+    &#39;&#39;&#39;
+    Caculate total population
+    return a int number  , which should be between 20m - 30m
+    &#39;&#39;&#39;
+    figure = self.img
+    if logarithm is True:
+        figure = np.where(np.isnan(figure), 0, figure)
+        plt.imshow(np.log(figure+1))
+    else:
+        figure = np.where(figure == 0, np.NaN, figure)
+        plt.imshow(figure)</code></pre>
+</details>
+</dd>
+<dt id="SpaJava.allocpop.JavaRasterPrepare.rectify_pop"><code class="name flex">
+<span>def <span class="ident">rectify_pop</span></span>(<span>self, pop)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>clean the raster data
+to be continued....</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rectify_pop(self, pop):
+    &#39;&#39;&#39;
+    clean the raster data
+    to be continued....
+    &#39;&#39;&#39;
+    self.img = (self.img/self.img.sum())* pop</code></pre>
+</details>
+</dd>
+<dt id="SpaJava.allocpop.JavaRasterPrepare.smoothen_raster"><code class="name flex">
+<span>def <span class="ident">smoothen_raster</span></span>(<span>self, img_boundary_bw, coresize=55, method_smooth='low')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>create a smoothened border between contigenous raster blocks
+warning: it takes about 1 min to run
+coresize: the heterogineous core in each block
+method_smooth: two methods to smoothen the border:
+'slow' is slower, 'fast' is more radical
+img_boundary_bw: the binary map depict the boundaries, generated by
+self.JavaSplit</p>
+<p>return np.array</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def smoothen_raster(self, img_boundary_bw, coresize=55, method_smooth=&#39;low&#39;):
+    &#39;&#39;&#39;
+    create a smoothened border between contigenous raster blocks
+    warning: it takes about 1 min to run
+    coresize: the heterogineous core in each block
+    method_smooth: two methods to smoothen the border:
+                   &#39;slow&#39; is slower, &#39;fast&#39; is more radical
+    img_boundary_bw: the binary map depict the boundaries, generated by  self.JavaSplit
+
+    return np.array
+    &#39;&#39;&#39;
+    # smoothing the value
+    img_s = self.img.copy()
+    img_boundary_t = img_boundary_bw   # the foundation of borders
+    img_binary = img_s &gt; 0
+
+    if coresize &lt; 50:
+        print(&#34;dangerous, super slow. The program will stop&#34;)
+        return img_s
+
+    for _ in range(60 - coresize):
+
+        img_boundary_t = ndimage.binary_erosion(img_boundary_t &gt; 0, iterations=1)
+        img_index = img_binary &gt; img_boundary_t
+        index = np.where(img_index)
+        length = len(index[0])
+        print(length)
+
+        for k in range(length):
+            i = index[0][k]
+            j = index[1][k]
+            if i &lt;= 0 or j &lt;= 0:
+                pass
+            elif i &gt;= self.size_y-1 or j &gt;= self.size_x-1:
+                pass
+            else:
+                temp_9 = img_s[i-1:i+2, j-1:j+2]    #img_s[i, j],
+                if img_s[i, j] - temp_9.mean() &lt; 5:
+                    pass
+                elif method_smooth == &#39;slow&#39;:
+                    img_s[i, j] = temp_9.mean()
+                elif method_smooth == &#39;fast&#39;:
+                    img_s[i, j] = img_s[i, j] + ((temp_9.max() - img_s[i, j])*0.4 +
+                                                 (temp_9.min() - img_s[i, j])*0.4)
+    return img_s</code></pre>
+</details>
+</dd>
+<dt id="SpaJava.allocpop.JavaRasterPrepare.total_pop"><code class="name flex">
+<span>def <span class="ident">total_pop</span></span>(<span>self, cellsize=100)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Caculate total population
+return a int number
+, which should be between 20m - 30m</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def total_pop(self, cellsize=100):
+    &#39;&#39;&#39;
+    Caculate total population
+    return a int number  , which should be between 20m - 30m
+    &#39;&#39;&#39;
+    img = self.img/cellsize
+    pop = img.sum()
+    return pop</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="SpaJava" href="index.html">SpaJava</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="SpaJava.allocpop.JavaPolygonPrepare" href="#SpaJava.allocpop.JavaPolygonPrepare">JavaPolygonPrepare</a></code></h4>
+<ul class="">
+<li><code><a title="SpaJava.allocpop.JavaPolygonPrepare.conv_raster" href="#SpaJava.allocpop.JavaPolygonPrepare.conv_raster">conv_raster</a></code></li>
+<li><code><a title="SpaJava.allocpop.JavaPolygonPrepare.data_clean" href="#SpaJava.allocpop.JavaPolygonPrepare.data_clean">data_clean</a></code></li>
+<li><code><a title="SpaJava.allocpop.JavaPolygonPrepare.fig_show" href="#SpaJava.allocpop.JavaPolygonPrepare.fig_show">fig_show</a></code></li>
+<li><code><a title="SpaJava.allocpop.JavaPolygonPrepare.intersect" href="#SpaJava.allocpop.JavaPolygonPrepare.intersect">intersect</a></code></li>
+<li><code><a title="SpaJava.allocpop.JavaPolygonPrepare.shp_read" href="#SpaJava.allocpop.JavaPolygonPrepare.shp_read">shp_read</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="SpaJava.allocpop.JavaRasterAnalysis" href="#SpaJava.allocpop.JavaRasterAnalysis">JavaRasterAnalysis</a></code></h4>
+<ul class="">
+<li><code><a title="SpaJava.allocpop.JavaRasterAnalysis.derivate" href="#SpaJava.allocpop.JavaRasterAnalysis.derivate">derivate</a></code></li>
+<li><code><a title="SpaJava.allocpop.JavaRasterAnalysis.spatial_stats" href="#SpaJava.allocpop.JavaRasterAnalysis.spatial_stats">spatial_stats</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="SpaJava.allocpop.JavaRasterPrepare" href="#SpaJava.allocpop.JavaRasterPrepare">JavaRasterPrepare</a></code></h4>
+<ul class="two-column">
+<li><code><a title="SpaJava.allocpop.JavaRasterPrepare.block_split" href="#SpaJava.allocpop.JavaRasterPrepare.block_split">block_split</a></code></li>
+<li><code><a title="SpaJava.allocpop.JavaRasterPrepare.neo_dilation" href="#SpaJava.allocpop.JavaRasterPrepare.neo_dilation">neo_dilation</a></code></li>
+<li><code><a title="SpaJava.allocpop.JavaRasterPrepare.neo_erosion_raster" href="#SpaJava.allocpop.JavaRasterPrepare.neo_erosion_raster">neo_erosion_raster</a></code></li>
+<li><code><a title="SpaJava.allocpop.JavaRasterPrepare.raster_show" href="#SpaJava.allocpop.JavaRasterPrepare.raster_show">raster_show</a></code></li>
+<li><code><a title="SpaJava.allocpop.JavaRasterPrepare.rectify_pop" href="#SpaJava.allocpop.JavaRasterPrepare.rectify_pop">rectify_pop</a></code></li>
+<li><code><a title="SpaJava.allocpop.JavaRasterPrepare.smoothen_raster" href="#SpaJava.allocpop.JavaRasterPrepare.smoothen_raster">smoothen_raster</a></code></li>
+<li><code><a title="SpaJava.allocpop.JavaRasterPrepare.total_pop" href="#SpaJava.allocpop.JavaRasterPrepare.total_pop">total_pop</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
