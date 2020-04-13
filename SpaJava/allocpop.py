@@ -54,7 +54,7 @@ class JavaPolygonPrepare():
                 file_df.plot(figsize=(10, 10), alpha=0.5, edgecolor='k')
         return file_df
 
-    def data_clean(self, path,show=False):
+    def data_clean(self, path, show=False):
         '''
         cleaning the polygon data and delete unnessesary values
         return cleaned polygons, with 1 single col
@@ -128,7 +128,7 @@ class JavaRasterPrepare():
         else:
             self.raster = JavPath       # the raster file that we adopt in this analysis
         self.img = gdal.Open(self.raster).ReadAsArray()     # get the nd array matrix
-        self.img = np.where(self.img<0, 0, self.img)
+        self.img = np.where(self.img < 0, 0, self.img)
         self.size_y = self.img.shape[0]   # size on Y axis, which is num of rows
         self.size_x = self.img.shape[1]   # size on X axis, which is num of colss
 
@@ -148,13 +148,13 @@ class JavaRasterPrepare():
         '''
         self.img = (self.img/self.img.sum())* pop
 
-    def raster_show(self, lg=True):
+    def raster_show(self, logarithm=True):
         '''
         Caculate total population
         return a int number  , which should be between 20m - 30m
         '''
         figure = self.img
-        if lg is True:
+        if logarithm is True:
             figure = np.where(np.isnan(figure), 0, figure)
             plt.imshow(np.log(figure+1))
         else:
@@ -180,13 +180,13 @@ class JavaRasterPrepare():
         imgbw_ex = ndimage.binary_dilation(imgbw, iterations=1)  # expansion first
         imgbw_ring = imgbw_ex > imgbw                   # detect the changes ....
         img = np.where(img == 0, np.NaN, img)
-        
+
         for _ in range(repeat):
             index = np.where(imgbw_ring)
             length = len(index[0])
-            for ix in range(length):
-                i = index[0][ix]
-                j = index[1][ix]
+            for k in range(length):
+                i = index[0][k]
+                j = index[1][k]
                 if i == size_y-1 or j == size_x-1:
                     if not np.isnan(img[i-1, j]):
                         img[i, j] = img[i-1, j]
@@ -265,9 +265,9 @@ class JavaRasterPrepare():
             length = len(index[0])
             print(length)
 
-            for ix in range(length):
-                i = index[0][ix]
-                j = index[1][ix]
+            for k in range(length):
+                i = index[0][k]
+                j = index[1][k]
                 if i <= 0 or j <= 0:
                     pass
                 elif i >= self.size_y-1 or j >= self.size_x-1:
@@ -286,14 +286,18 @@ class JavaRasterPrepare():
     def neo_erosion_raster(self, img_boundary, coresize=55, show=True):
         '''
         to create the erosion unit of analysis
+        return the final raster that we want
         '''
-        binary_boundary_base = img_boundary>0
-        img_core = ndimage.binary_erosion(binary_boundary_base, iterations= 60 - coresize)
+        binary_boundary_base = img_boundary > 0
+        img_core = ndimage.binary_erosion(binary_boundary_base, iterations=60-coresize)
         if show is True:
             plt.imshow(img_core)
-        return img_core
-        
-        
+        img = self.img
+        img = np.where(np.isnan(img), 0, img)
+        img = img_core*img
+        return img
+
+
 class JavaRasterAnalysis():
     '''
     this case is on-hold. for doing raster analysis
