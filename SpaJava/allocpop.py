@@ -1,7 +1,6 @@
 import geopandas
 import rasterio
 import matplotlib.pyplot as plt
-import gdal
 import numpy as np
 from osgeo import gdal
 from osgeo import ogr
@@ -26,13 +25,13 @@ class JavPopEnvi():
             BuiltDataP :    # path of      allocated data, the polygon data that we are looking forward
             BuiltRasterP ： # path of      allocated data, rasterized.   (malfunctioning)
         '''
-        self.EjSpP = '.\Data\EastJava_Kec.shp'            #  data based on administrative divisions 
-        self.BuiltUpSpP = '.\Data\Kec_buffer.shp'         #  built up area polygon, which we want to allocate data above to 
-        self.BuiltDataP = '.\Data\BuiltData.shp'          #  allocated data, the polygon data that we are looking forward
-        self.BuiltRasterP = '.\Data\BuiltR.tif'
-        self.BDtif = '.\Data\PopBDtif.tif'
+        self.EjSpP = '.\\Data\\EastJava_Kec.shp'            #  data based on administrative divisions 
+        self.BuiltUpSpP = '.\\Data\\Kec_buffer.shp'         #  built up area polygon, which we want to allocate data above to 
+        self.BuiltDataP = '.\\Data\\BuiltData.shp'          #  allocated data, the polygon data that we are looking forward
+        self.BuiltRasterP = '.\\Data\\BuiltR.tif'
+        #self.BDtif = '.\Data\PopBDtif.tif'
     
-    def DfRead(self, file = None, show = True):
+    def JavRead(self, file = None, show = True):
         '''
         use geopanda to read the shapefile in ./data folder
         file:     path of the shp file
@@ -53,7 +52,7 @@ class JavPopEnvi():
             fileDf.plot(figsize=(10, 10), alpha=0.5, edgecolor='k')
         return fileDf
     
-    def DataClean(self, path):
+    def JavDtClean(self, path):
         '''
         cleaning the polygon data and delete unnessesary values
         return cleaned polygons, with 1 single col
@@ -62,7 +61,7 @@ class JavPopEnvi():
         data = data[['OBJECTID','geometry']]
         return data
     
-    def JavInt(self,EjSp = None, BuiltUpSp = None ):
+    def JavIntersect(self,EjSp = None, BuiltUpSp = None ):
         '''
         intsect two shapefiles:
             EjSp is the 
@@ -78,11 +77,14 @@ class JavPopEnvi():
         return BuiltData
     
     def JavShow(self,bp):
+        '''
+        plot the shapefile
+        '''
         bp.plot(figsize=(10, 10), alpha=0.5, edgecolor='k')
         return
     
        
-    def ConvJavRaster(self, size = 100, shapefile = None, rasterloc = None):
+    def JavConvRaster(self, size = 100, shapefile = None, rasterloc = None):
         '''
         ### malfunctioning
         this fun is supposed to convert a shape file to raster, but somehow it failed.
@@ -123,41 +125,68 @@ class JavRasterAnalysis(object):
     This class will initialize Raster analysis unit
     
     '''
-    def __init(self, JavPath = '.\Data\popbdden.tif' ):
-        self.BDtif = '.\Data\PopBDtif.tif'
-        self.rs = gdal.Open(JavPath)       
-        
-    def JavaResize(self):
-        '''
-        clean the raster data
-        '''
-        
-        
-        
-        
-    def JavaPop(self):
+    def __init__(self, JavPath = '.\\Data\\popbdden.tif' ):
+        if JavaPath == None:
+            self.rs = '.\\Data\\popbdden.tif' 
+        else: 
+            self.rs = JavPath                     # the raster file that we adopt in this analysis
+        self.img = gdal.Open(self.rs).ReadAsArray()     # get the nd array matrix
+        self.sizeY = img.shape[0]   # size on Y axis, which is num of rows
+        self.sizeX = img.shape[1]   # size on X axis, which is num of colss            
+
+    def JavaPop(self, cellsize = 100):
         '''
         Caculate total population
         return a int number  , which should be between 20m - 30m
         '''
-        img = rs.ReadAsArray()/100  
-        
+        self.img = self.img/cellsize
+        pop = self.img.sum()
+        return pop
+
+    def JavaRectifyPop(self, pop):
+        '''
+        clean the raster data
+        to be continued....
+        '''
+        self.img = (self.img/self.img.sum() )* pop
+        return self.img
+    
+    
     def JavaShow(self, log = True):
         '''
         Caculate total population
         return a int number  , which should be between 20m - 30m
         '''
-        figure = self.rs
-        figure = np.where(figure ==0, np.NaN, figure)
-        plt.imshow(log(figure))
+        figure = self.img   
+        if log == True:
+            figure = np.where(np.isnan(figure), 0, figure)
+            plt.imshow(log(figure+1))
+        else :
+            figure = np.where(figure ==0, np.NaN, figure)
+            plt.imshow(figure)
         return
     
-    def JavaDilation(self ): 
+    def JavaDilation(self, iteration = 10 ): 
         '''
-        Make the raster file looks nicer
+        dilate the origin img without changing it into a binary one
+      
+        warning: it takes a while to execute this func
+        
         return raster
         '''
         # binary_dilation with original value
+        img = self.img
+        img = np.where( np.isnan(img), 0, img)
+        sizeY = self.sizeY
+        sizeX = self.sizeX
+        
+        # binary_dilation with original value
+        # img is a imgage where -9999 stand for NaN values
+        imgbw = img  > 0 # binary image 
+        #img =np.where(img==-9999, np.NaN, img)                       # reorganize img
+        imgbw_ex = ndimage.binary_dilation(imgbw, iterations = 1)  # expansion first
+        imgbw_ring = imgbw_ex > imgbw                               # detect the changes ....   
+        
         for m in range(60):
             index = np.where(imgbw_ring)
             length = len(index[0])
@@ -187,21 +216,29 @@ class JavRasterAnalysis(object):
             imgbw =  np.where(np.isnan(img),0, img)  > 0
             imgbw_ex = ndimage.binary_dilation(imgbw, iterations = 1)  # expansion first
             imgbw_ring = imgbw_ex > imgbw         
-        
+
+        self.img = img
+        return img
         
     def JavPopAdj():
+        '''
+        adjust values on the raster to relatively correct value
+        
+        '''
         imgt= img / img.sum()*totalp
         imgt = np.where(img==0, np.NaN, img)
         plt.imshow(imgt)
     
-    def JavaSplit():
+    def JavaSplit(self):
         '''
-        split the raster, create a boundary between to blocks, if they have different values
+        split the raster, create a boundary (0) between too adjcent rasters blocks, if they have different values
         it provides a base binary map for future uses
+        warning: it takes a while to run
+        
         return binary raster
         '''
         
-        img_boundary_base = img.copy()   # the base map for future analysis....
+        img_boundary_base = self.img.copy()   # the base map for future analysis....
         for i in range(sizeY-1):
             for j in range(sizeX-1):
                 if img[i,j] == 0:
@@ -210,26 +247,29 @@ class JavRasterAnalysis(object):
                     img_boundary_base[i,j] = 0
                 elif img[i,j] != img[i,j+1]:
                     img_boundary_base[i,j] = 0
-    def JavaRasterClean():
-        '''
-        clean the raster data
-        '''
+        img_boundary_bw = img_boundary_base>0          
+        return img_boundary_base
     
-    def JavaSmoothValue():
+
+    
+    def JavaSmoothValue(self, img_boundary_base, coresize = 55, method_smooth = 'slow'):
         '''
-        This one is largely a failed project
-        return np.array with smoother values
+        create a smoothened border between contigenous raster blocks
+        warning: it takes about 1 min to run
+        coresize: the heterogineous core in each block that have the same value (population density in this case)        
+        method_smooth: two methods to smoothen the border, 'slow' is slower, 'fast' is more radical
+        img_boundary_base: the binary map depict the boundaries, generated by  self.JavaSplit
+        
+        return np.array 
         '''
         # smoothing the value
-        img_smooth = img.copy()
-        method_smooth = 'slow'
-        img_boundary_t = img_boundary_base
-        img_binary = img>0
-        coresize = 55 # the heterogineous core that have a same population density
-        img_core = ndimage.binary_erosion(img_boundary>0, iterations= 60 - coresize)
-
+        img_smooth = self.img.copy()
+        img_boundary_t = img_boundary_base   # the foundation of borders
+        img_binary = img_smooth>0
+        
         if coresize <50:
-            raise("dangerous, super slow")
+            print("dangerous, super slow. The program will stop")
+            return img_smooth
 
         for m in range(60 - coresize):
 
@@ -256,7 +296,7 @@ class JavRasterAnalysis(object):
                         img_smooth[i,j] = img_smooth[i,j]    + ((temp_9.max() - img_smooth[i,j])*0.4  
                                                              + (temp_9.min() - img_smooth[i,j])*0.4   )
 
-
+        return img_smooth
 
     
     
@@ -277,5 +317,6 @@ class JavAnalysis(object):
     '''
 
    
-if __main__ = "main"
+if __name__ == "__main__":
+    print('it is on')
 
