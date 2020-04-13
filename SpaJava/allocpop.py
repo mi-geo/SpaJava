@@ -1,140 +1,135 @@
+'''
+The module is for data analysis in Java island.
+'''
+import os
 import geopandas
-import rasterio
 import matplotlib.pyplot as plt
 import numpy as np
 from osgeo import gdal
 from osgeo import ogr
-from osgeo import gdalconst
-import os
 from scipy import ndimage
 
-class JavPopEnvi():
+class JavaPolygonPrepare():
     '''
-    The purpose of this class is supposed to preprocess and view the data. It has several main functions: 
-        read or show the polygons
-        generate the vector(shapefile) that we need
-        rasterize polygons, which is the final unit of analysis
-    note: I've stucked in the rasterization part for weeks, that's why I'm going to use an alternative methods in the next a couple of days
+    Purpose: preprocess and view the data. It has several main functions:
+        1. read or show the polygons
+        2. generate the vector(shapefile) that we need
+        3. rasterize polygons, which is the final unit of analysis
+    note: I've stucked in the rasterization part for weeks, that's why I'm going
+            to use an alternative methods in the next a couple of days
     '''
 
-    def __init__ (self):
+    def __init__(self):
         '''
         Path of the files
-            EjSpP:          # path of      data based on administrative divisions 
-            BuiltUpSpP :    # path of      built up area polygon, which we want to allocate data above to 
-            BuiltDataP :    # path of      allocated data, the polygon data that we are looking forward
-            BuiltRasterP ： # path of      allocated data, rasterized.   (malfunctioning)
+            java_shp:          # data based on administrative divisions
+            builtup_shp:   # built-up area polygon,
+                              the area should contain final data
+            Built_DataP:   # allocated data, the polygon data that we are looking forward
+            built_rs ： # allocated data, rasterized.   (malfunctioning)
         '''
-        self.EjSpP = '.\\Data\\EastJava_Kec.shp'            #  data based on administrative divisions 
-        self.BuiltUpSpP = '.\\Data\\Kec_buffer.shp'         #  built up area polygon, which we want to allocate data above to 
-        self.BuiltDataP = '.\\Data\\BuiltData.shp'          #  allocated data, the polygon data that we are looking forward
-        self.BuiltRasterP = '.\\Data\\BuiltR.tif'
-        #self.BDtif = '.\Data\PopBDtif.tif'
-    
-    def JavRead(self, file = None, show = True):
+        self.java_shp = '.\\Data\\EastJava_Kec.shp'
+        self.builtup_shp = '.\\Data\\Kec_buffer.shp'
+        self.built_rs = '.\\Data\\BuiltR.tif'
+        #self.Built_DataP = '.\\Data\\BuiltData.shp'
+
+    def shp_read(self, file=None, show=True):
         '''
         use geopanda to read the shapefile in ./data folder
         file:     path of the shp file
         show the shape file is required
-        return       GeoDataFrame  
+        return       GeoDataFrame
         '''
         if file is None:
-            file =self.EjSpP # self is an argument only available at function call time.
-        
-        if not os.path.isfile(file):
-            raise ValueError("Input file does not exist: {0}. I'll quit now.".format(file))
-        elif str(file)[-3:] != 'shp':
-            raise ValueError("Input file should be a shapefile, not a {0}. I'll quit now.".format(file[-3:]))        
+            file = self.java_shp # self is an argument only available at function call time.
 
-           
-        fileDf = geopandas.read_file(file)
-        if show == True:
-            fileDf.plot(figsize=(10, 10), alpha=0.5, edgecolor='k')
-        return fileDf
-    
-    def JavDtClean(self, path):
+        elif not os.path.isfile(file):
+            raise ValueError("Input not exist: {0}. I'll quit now.".format(file))
+        elif str(file)[-3:] != 'shp':
+            raise ValueError("Input should be shp, not a {0}. quit now.".format(file[-3:]))
+        else:
+            file_df = geopandas.read_file(file)
+            if show is True:
+                file_df.plot(figsize=(10, 10), alpha=0.5, edgecolor='k')
+        return file_df
+
+    def data_clean(self, path):
         '''
         cleaning the polygon data and delete unnessesary values
         return cleaned polygons, with 1 single col
         '''
-        data = DfRead(path)
-        data = data[['OBJECTID','geometry']]
+        data = self.shp_read(path)
+        data = data[['OBJECTID', 'geometry']]
         return data
-    
-    def JavIntersect(self,EjSp = None, BuiltUpSp = None ):
+
+    def intersect(self, java_shp=None, builtup_shp=None):
         '''
         intsect two shapefiles:
-            EjSp is the 
-            BuiltUpSp is the file 
+            java_shp is the file 1
+            builtup_shp is file 2
         return the required Spa file, our analysis shapefile
         '''
-        if EjSp == None:
-            EjSp = self.EjSp
-        if BuiltUpSp == None:
-            BuiltUpSp = self.BuiltUpSp
-        BuiltUpSp = self.DataClean(BuiltUpSp)
-        BuiltData = geopandas.overlay(EjSp, BuiltUpSp, how='intersection')
-        return BuiltData
-    
-    def JavShow(self,bp):
+        if java_shp is None:
+            java_shp = self.java_shp
+        if builtup_shp is None:
+            builtup_shp = self.builtup_shp
+        builtup_shp = self.data_clean(builtup_shp)
+        int_data = geopandas.overlay(java_shp, builtup_shp, how='intersection')
+        return int_data
+
+    def fig_show(self, figure_file, figsize=(10, 10), alpha=0.5, edgecolor='k'):
         '''
         plot the shapefile
         '''
-        bp.plot(figsize=(10, 10), alpha=0.5, edgecolor='k')
-        return
-    
-       
-    def JavConvRaster(self, size = 100, shapefile = None, rasterloc = None):
+        figure_file.plot(figsize=figsize, alpha=alpha, edgecolor=edgecolor)
+
+    def conv_raster(self, psize=100, shapefile=None, rasterloc=None, no_value=-999):
         '''
         ### malfunctioning
         this fun is supposed to convert a shape file to raster, but somehow it failed.
-        shapefile  :  the actual shp file that we want to convert
-        rasterloc  :  path of the raster that we want to deposit
-        size:   size of cell,  unit is meter
-        
+        shapefile: the actual shp file that we want to convert
+        rasterloc: path of the raster that we want to deposit
+        psize:   size of cell, unit is meter
+
         return None
         '''
         if shapefile is None:
-            shapefile = self.BuiltUpSpP # self is an argument only available at function call time.
-        if rasterloc == None:
-            rasterloc = self.BuiltRasterP
+            shapefile = self.builtup_shp # self is an argument only available at function call time.
+        if rasterloc is None:
+            rasterloc = self.built_rs
 
-        # a. Open 1) opening the shapefile    
-        source_ds = ogr.Open(shapefile)
-        source_layer = source_ds.GetLayer()
+        # 1. opening the shapefile
+        source_layer = ogr.Open(shapefile).GetLayer()
 
-        # b. creating the format (empty) raster data source
-        pixelWidth = pixelHeight = size 
+        # 2. creating the format (empty) raster data source
         x_min, x_max, y_min, y_max = source_layer.GetExtent()
-        cols = int((x_max - x_min) / pixelHeight)
-        rows = int((y_max - y_min) / pixelWidth)
-        target_ds = gdal.GetDriverByName('GTiff').Create(raster_path, cols, rows, 1,  gdal.GDT_Float64) ##COMMENT 2
-        target_ds.SetGeoTransform((x_min, pixelWidth, 0, y_max, 0, -pixelHeight))
+        cols = int((x_max - x_min) / psize)
+        rows = int((y_max - y_min) / psize)
+        target_ds = gdal.GetDriverByName('GTiff').Create(rasterloc,
+                                                         cols, rows, 1, gdal.GDT_Float64)
+        target_ds.SetGeoTransform((x_min, psize, 0, y_max, 0, -psize))
         band = target_ds.GetRasterBand(1)
-        NoData_value = -999
-        burnVal = 0
-        band.SetNoDataValue(NoData_value)
+        band.SetNoDataValue(no_value)
         band.FlushCache()
-        gdal.RasterizeLayer(target_ds, [1], source_layer,burn_values=[burnVal] )#options=["ATTRIBUTE=POP_CHANGE"])
-        return
+        raster = gdal.RasterizeLayer(target_ds, [1], source_layer,
+                                     burn_values=[0])#options=["ATTRIBUTE=POP_CHANGE"])
+        return raster
 
-    
-    
-class JavRasterAnalysis(object):
+class JavaRasterPrepare():
     '''
     This class will initialize Raster analysis unit
-    
-    '''
-    def __init__(self, JavPath = '.\\Data\\popbdden.tif' ):
-        if JavaPath == None:
-            self.rs = '.\\Data\\popbdden.tif' 
-        else: 
-            self.rs = JavPath                     # the raster file that we adopt in this analysis
-        self.img = gdal.Open(self.rs).ReadAsArray()     # get the nd array matrix
-        self.sizeY = img.shape[0]   # size on Y axis, which is num of rows
-        self.sizeX = img.shape[1]   # size on X axis, which is num of colss            
 
-    def JavaPop(self, cellsize = 100):
+    '''
+    def __init__(self, JavPath='.\\Data\\popbdden.tif'):
+        if JavPath is None:
+            self.raster = '.\\Data\\popbdden.tif'
+        else:
+            self.raster = JavPath       # the raster file that we adopt in this analysis
+        self.img = gdal.Open(self.raster).ReadAsArray()     # get the nd array matrix
+        self.size_y = self.img.shape[0]   # size on Y axis, which is num of rows
+        self.size_x = self.img.shape[1]   # size on X axis, which is num of colss
+
+    def total_pop(self, cellsize=100):
         '''
         Caculate total population
         return a int number  , which should be between 20m - 30m
@@ -143,180 +138,166 @@ class JavRasterAnalysis(object):
         pop = self.img.sum()
         return pop
 
-    def JavaRectifyPop(self, pop):
+    def rectify_pop(self, pop):
         '''
         clean the raster data
         to be continued....
         '''
-        self.img = (self.img/self.img.sum() )* pop
-        return self.img
-    
-    
-    def JavaShow(self, log = True):
+        self.img = (self.img/self.img.sum())* pop
+
+    def raster_show(self, log=True):
         '''
         Caculate total population
         return a int number  , which should be between 20m - 30m
         '''
-        figure = self.img   
-        if log == True:
+        figure = self.img
+        if log is True:
             figure = np.where(np.isnan(figure), 0, figure)
             plt.imshow(log(figure+1))
-        else :
-            figure = np.where(figure ==0, np.NaN, figure)
+        else:
+            figure = np.where(figure == 0, np.NaN, figure)
             plt.imshow(figure)
-        return
-    
-    def JavaDilation(self, iteration = 10 ): 
+
+    def neo_dilation(self, repeat=50):
         '''
         dilate the origin img without changing it into a binary one
-      
         warning: it takes a while to execute this func
-        
         return raster
         '''
         # binary_dilation with original value
         img = self.img
-        img = np.where( np.isnan(img), 0, img)
-        sizeY = self.sizeY
-        sizeX = self.sizeX
-        
+        img = np.where(np.isnan(img), 0, img)
+        size_y = self.size_y
+        size_x = self.size_x
+
         # binary_dilation with original value
         # img is a imgage where -9999 stand for NaN values
-        imgbw = img  > 0 # binary image 
-        #img =np.where(img==-9999, np.NaN, img)                       # reorganize img
-        imgbw_ex = ndimage.binary_dilation(imgbw, iterations = 1)  # expansion first
-        imgbw_ring = imgbw_ex > imgbw                               # detect the changes ....   
-        
-        for m in range(60):
+        imgbw = img > 0 # binary image
+        #img =np.where(img == -9999, np.NaN, img)         # reorganize img
+        imgbw_ex = ndimage.binary_dilation(imgbw, iterations=1)  # expansion first
+        imgbw_ring = imgbw_ex > imgbw                   # detect the changes ....
+
+        for _ in range(repeat):
             index = np.where(imgbw_ring)
             length = len(index[0])
-            index[0][100]
-            for u in range(length):
-                    i = index[0][u]
-                    j = index[1][u]
-                    if i == sizeY-1 or j == sizeX-1:
-                        if not np.isnan(img[i-1,j]):
-                            img[i,j] = img[i-1,j]
-                        elif not np.isnan(img[i,j-1]):
-                            img[i,j] = img[i,j-1]
-                    elif   i== 0 or j == 0:
-                        if not np.isnan(img[i+1,j]): 
-                            img[i,j] = img[i+1,j] 
-                        elif not np.isnan(img[i,j+1]):
-                            img[i,j] = img[i,j+1]             
-                    else:
-                        if not np.isnan(img[i+1,j]): 
-                            img[i,j] = img[i+1,j] 
-                        elif not np.isnan(img[i,j+1]):
-                            img[i,j] = img[i,j+1] 
-                        elif not np.isnan(img[i-1,j]):
-                            img[i,j] = img[i-1,j]
-                        elif not np.isnan(img[i,j-1]):
-                            img[i,j] = img[i,j-1] 
-            imgbw =  np.where(np.isnan(img),0, img)  > 0
-            imgbw_ex = ndimage.binary_dilation(imgbw, iterations = 1)  # expansion first
-            imgbw_ring = imgbw_ex > imgbw         
+            for ix in range(length):
+                i = index[0][ix]
+                j = index[1][ix]
+                if i == size_y-1 or j == size_x-1:
+                    if not np.isnan(img[i-1, j]):
+                        img[i, j] = img[i-1, j]
+                    elif not np.isnan(img[i, j-1]):
+                        img[i, j] = img[i, j-1]
+                elif   i == 0 or j == 0:
+                    if not np.isnan(img[i+1, j]):
+                        img[i, j] = img[i+1, j]
+                    elif not np.isnan(img[i, j+1]):
+                        img[i, j] = img[i, j+1]
+                else:
+                    if not np.isnan(img[i+1, j]):
+                        img[i, j] = img[i+1, j]
+                    elif not np.isnan(img[i, j+1]):
+                        img[i, j] = img[i, j+1]
+                    elif not np.isnan(img[i-1, j]):
+                        img[i, j] = img[i-1, j]
+                    elif not np.isnan(img[i, j-1]):
+                        img[i, j] = img[i, j-1]
+            imgbw = np.where(np.isnan(img), 0, img) > 0
+            imgbw_ex = ndimage.binary_dilation(imgbw, iterations=1)  # expansion first
+            imgbw_ring = imgbw_ex > imgbw
 
         self.img = img
         return img
-        
-    def JavPopAdj():
+
+    def block_split(self):
         '''
-        adjust values on the raster to relatively correct value
-        
-        '''
-        imgt= img / img.sum()*totalp
-        imgt = np.where(img==0, np.NaN, img)
-        plt.imshow(imgt)
-    
-    def JavaSplit(self):
-        '''
-        split the raster, create a boundary (0) between too adjcent rasters blocks, if they have different values
+        split the raster, create a boundary (0) between too adjcent rasters blocks,
         it provides a base binary map for future uses
         warning: it takes a while to run
-        
+
         return binary raster
         '''
-        
+        img = self.img.copy()
+        size_y = self.size_y
+        size_x = self.size_x
         img_boundary_base = self.img.copy()   # the base map for future analysis....
-        for i in range(sizeY-1):
-            for j in range(sizeX-1):
-                if img[i,j] == 0:
-                    continue
-                elif   img[i,j] != img[i+1,j]:
-                    img_boundary_base[i,j] = 0
-                elif img[i,j] != img[i,j+1]:
-                    img_boundary_base[i,j] = 0
-        img_boundary_bw = img_boundary_base>0          
-        return img_boundary_base
-    
+        for i in range(size_y-1):
+            for j in range(size_x-1):
+                if img[i, j] == 0:
+                    pass
+                elif img[i, j] != img[i+1, j]:
+                    img_boundary_base[i, j] = 0
+                elif img[i, j] != img[i, j+1]:
+                    img_boundary_base[i, j] = 0
+        img_boundary_bw = img_boundary_base > 0
+        return img_boundary_bw
 
-    
-    def JavaSmoothValue(self, img_boundary_base, coresize = 55, method_smooth = 'slow'):
+    def smoothen_raster(self, img_boundary_bw, coresize=55, method_smooth='low'):
         '''
         create a smoothened border between contigenous raster blocks
         warning: it takes about 1 min to run
-        coresize: the heterogineous core in each block that have the same value (population density in this case)        
-        method_smooth: two methods to smoothen the border, 'slow' is slower, 'fast' is more radical
-        img_boundary_base: the binary map depict the boundaries, generated by  self.JavaSplit
-        
-        return np.array 
+        coresize: the heterogineous core in each block
+        method_smooth: two methods to smoothen the border:
+                       'slow' is slower, 'fast' is more radical
+        img_boundary_bw: the binary map depict the boundaries, generated by  self.JavaSplit
+
+        return np.array
         '''
         # smoothing the value
-        img_smooth = self.img.copy()
-        img_boundary_t = img_boundary_base   # the foundation of borders
-        img_binary = img_smooth>0
-        
-        if coresize <50:
+        img_s = self.img.copy()
+        img_boundary_t = img_boundary_bw   # the foundation of borders
+        img_binary = img_s > 0
+
+        if coresize < 50:
             print("dangerous, super slow. The program will stop")
-            return img_smooth
+            return img_s
 
-        for m in range(60 - coresize):
+        for _ in range(60 - coresize):
 
-            img_boundary_t = ndimage.binary_erosion(img_boundary_t>0, iterations=1)
-            img_index = img_binary>img_boundary_t
+            img_boundary_t = ndimage.binary_erosion(img_boundary_t > 0, iterations=1)
+            img_index = img_binary > img_boundary_t
             index = np.where(img_index)
             length = len(index[0])
             print(length)
 
-            for u in range(length):
-                i = index[0][u]
-                j = index[1][u]
+            for ix in range(length):
+                i = index[0][ix]
+                j = index[1][ix]
                 if i <= 0 or j <= 0:
-                    continue
-                elif i >= sizeY-1 or j >= sizeX-1:
-                    continue
+                    pass
+                elif i >= self.size_y-1 or j >= self.size_x-1:
+                    pass
                 else:
-                    temp_9 =  img_smooth[i-1:i+2,j-1:j+2]    #img_smooth[i,  j],
-                    if img_smooth[i,j] - temp_9.mean() < 5:
-                        continue
+                    temp_9 = img_s[i-1:i+2, j-1:j+2]    #img_s[i, j],
+                    if img_s[i, j] - temp_9.mean() < 5:
+                        pass
                     elif method_smooth == 'slow':
-                        img_smooth[i,j] = temp_9.mean()
+                        img_s[i, j] = temp_9.mean()
                     elif method_smooth == 'fast':
-                        img_smooth[i,j] = img_smooth[i,j]    + ((temp_9.max() - img_smooth[i,j])*0.4  
-                                                             + (temp_9.min() - img_smooth[i,j])*0.4   )
+                        img_s[i, j] = img_s[i, j] + ((temp_9.max() - img_s[i, j])*0.4 +
+                                                     (temp_9.min() - img_s[i, j])*0.4)
+        return img_s
 
-        return img_smooth
-
-    
-    
-    
-class JavAnalysis(object):
-
-    def vadata(self, data1):
-        '''
-        if a function find the data doesn't satisfy our critirias, return FALSE, otherwise, return either shp or raster, and for raster, return the range of data (0:255, etc)
-        '''
-        input = A
-        input = B
-    
+class JavaRasterAnalysis():
     '''
-    The purpose of this class is to reassign values to each individual cells.  
-    package: conda install GDAL
-    
+    this case is on-hold. for doing raster analysis
     '''
+    def __init__(self):
+        '''
+        if a function find the data doesn't satisfy our critirias,
+        return FALSE, otherwise, return either shp or raster, and
+        for raster, return the range of data (0:255, etc)
+        '''
 
-   
+    def derivate(self):
+        '''
+        potential spatial ODE model
+        '''
+
+    def spatial_stats(self):
+        '''
+        potential spatial statistics
+        '''
+
 if __name__ == "__main__":
     print('it is on')
-
