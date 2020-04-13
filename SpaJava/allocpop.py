@@ -31,7 +31,6 @@ class JavaPolygonPrepare():
         self.java_shp = '.\\Data\\EastJava_Kec.shp'
         self.builtup_shp = '.\\Data\\Kec_buffer.shp'
         self.built_rs = '.\\Data\\BuiltR.tif'
-        #self.Built_DataP = '.\\Data\\BuiltData.shp'
 
     def shp_read(self, file=None, show=True):
         '''
@@ -42,7 +41,9 @@ class JavaPolygonPrepare():
         '''
         if file is None:
             file = self.java_shp # self is an argument only available at function call time.
-
+            file_df = geopandas.read_file(file)
+            if show is True:
+                file_df.plot(figsize=(10, 10), alpha=0.5, edgecolor='k')
         elif not os.path.isfile(file):
             raise ValueError("Input not exist: {0}. I'll quit now.".format(file))
         elif str(file)[-3:] != 'shp':
@@ -53,12 +54,12 @@ class JavaPolygonPrepare():
                 file_df.plot(figsize=(10, 10), alpha=0.5, edgecolor='k')
         return file_df
 
-    def data_clean(self, path):
+    def data_clean(self, path,show=False):
         '''
         cleaning the polygon data and delete unnessesary values
         return cleaned polygons, with 1 single col
         '''
-        data = self.shp_read(path)
+        data = self.shp_read(path, show=show)
         data = data[['OBJECTID', 'geometry']]
         return data
 
@@ -70,9 +71,9 @@ class JavaPolygonPrepare():
         return the required Spa file, our analysis shapefile
         '''
         if java_shp is None:
-            java_shp = self.java_shp
+            java_shp = self.data_clean(self.java_shp, show=False)
         if builtup_shp is None:
-            builtup_shp = self.builtup_shp
+            builtup_shp = self.data_clean(self.builtup_shp, show=False)
         builtup_shp = self.data_clean(builtup_shp)
         int_data = geopandas.overlay(java_shp, builtup_shp, how='intersection')
         return int_data
@@ -115,6 +116,7 @@ class JavaPolygonPrepare():
                                      burn_values=[0])#options=["ATTRIBUTE=POP_CHANGE"])
         return raster
 
+
 class JavaRasterPrepare():
     '''
     This class will initialize Raster analysis unit
@@ -126,6 +128,7 @@ class JavaRasterPrepare():
         else:
             self.raster = JavPath       # the raster file that we adopt in this analysis
         self.img = gdal.Open(self.raster).ReadAsArray()     # get the nd array matrix
+        self.img = np.where(self.img<0, 0, self.img)
         self.size_y = self.img.shape[0]   # size on Y axis, which is num of rows
         self.size_x = self.img.shape[1]   # size on X axis, which is num of colss
 
@@ -134,8 +137,8 @@ class JavaRasterPrepare():
         Caculate total population
         return a int number  , which should be between 20m - 30m
         '''
-        self.img = self.img/cellsize
-        pop = self.img.sum()
+        img = self.img/cellsize
+        pop = img.sum()
         return pop
 
     def rectify_pop(self, pop):
@@ -145,15 +148,15 @@ class JavaRasterPrepare():
         '''
         self.img = (self.img/self.img.sum())* pop
 
-    def raster_show(self, log=True):
+    def raster_show(self, lg=True):
         '''
         Caculate total population
         return a int number  , which should be between 20m - 30m
         '''
         figure = self.img
-        if log is True:
+        if lg is True:
             figure = np.where(np.isnan(figure), 0, figure)
-            plt.imshow(log(figure+1))
+            plt.imshow(np.log(figure+1))
         else:
             figure = np.where(figure == 0, np.NaN, figure)
             plt.imshow(figure)
@@ -176,7 +179,8 @@ class JavaRasterPrepare():
         #img =np.where(img == -9999, np.NaN, img)         # reorganize img
         imgbw_ex = ndimage.binary_dilation(imgbw, iterations=1)  # expansion first
         imgbw_ring = imgbw_ex > imgbw                   # detect the changes ....
-
+        img = np.where(img == 0, np.NaN, img)
+        
         for _ in range(repeat):
             index = np.where(imgbw_ring)
             length = len(index[0])
@@ -206,13 +210,14 @@ class JavaRasterPrepare():
             imgbw_ex = ndimage.binary_dilation(imgbw, iterations=1)  # expansion first
             imgbw_ring = imgbw_ex > imgbw
 
-        self.img = img
+        self.img = np.where(np.isnan(img), 0, img)
         return img
 
     def block_split(self):
         '''
         split the raster, create a boundary (0) between too adjcent rasters blocks,
         it provides a base binary map for future uses
+        do this step after neo_dilation
         warning: it takes a while to run
 
         return binary raster
@@ -278,6 +283,17 @@ class JavaRasterPrepare():
                                                      (temp_9.min() - img_s[i, j])*0.4)
         return img_s
 
+    def neo_erosion_raster(self, img_boundary, coresize=55, show=True):
+        '''
+        to create the erosion unit of analysis
+        '''
+        binary_boundary_base = img_boundary>0
+        img_core = ndimage.binary_erosion(binary_boundary_base, iterations= 60 - coresize)
+        if show is True:
+            plt.imshow(img_core)
+        return img_core
+        
+        
 class JavaRasterAnalysis():
     '''
     this case is on-hold. for doing raster analysis
