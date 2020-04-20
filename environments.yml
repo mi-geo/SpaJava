@@ -1,0 +1,13 @@
+channels:
+  - defaults
+dependencies:
+  - pylint
+  - pip
+  - pytest
+  - autopep8
+  - pdoc3
+  - geopandas
+  - matplotlib
+  - jupyter
+  - scipy
+  - descartes

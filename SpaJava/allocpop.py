@@ -2,6 +2,7 @@
 The module is for data analysis in Java island.
 '''
 import os
+from pathlib import Path
 import geopandas
 import matplotlib.pyplot as plt
 import numpy as np
@@ -28,9 +29,9 @@ class JavaPolygonPrepare():
             Built_DataP:   # allocated data, the polygon data that we are looking forward
             built_rs ： # allocated data, rasterized.   (malfunctioning)
         '''
-        self.java_shp = '.\\Data\\EastJava_Kec.shp'
-        self.builtup_shp = '.\\Data\\Kec_buffer.shp'
-        self.built_rs = '.\\Data\\BuiltR.tif'
+        self.java_shp = Path(r'./Data/EastJava_Kec.shp')
+        self.builtup_shp = Path(r'./Data/Kec_buffer.shp')
+        self.built_rs = Path(r'./Data/BuiltR.tif')
 
     def shp_read(self, file=None, show=True):
         '''
@@ -47,7 +48,7 @@ class JavaPolygonPrepare():
         elif not os.path.isfile(file):
             raise ValueError("Input not exist: {0}. I'll quit now.".format(file))
         elif str(file)[-3:] != 'shp':
-            raise ValueError("Input should be shp, not a {0}. quit now.".format(file[-3:]))
+            raise ValueError("Input should be shp, not a {0}. quit now.".format(str(file)[-3:]))
         else:
             file_df = geopandas.read_file(file)
             if show is True:
@@ -122,9 +123,9 @@ class JavaRasterPrepare():
     This class will initialize Raster analysis unit
 
     '''
-    def __init__(self, JavPath='.\\Data\\popbdden.tif'):
+    def __init__(self, JavPath=Path(r'./Data/popbdden.tif')):
         if JavPath is None:
-            self.raster = '.\\Data\\popbdden.tif'
+            self.raster = Path(r'./Data/popbdden.tif')
         else:
             self.raster = JavPath       # the raster file that we adopt in this analysis
         self.img = gdal.Open(self.raster).ReadAsArray()     # get the nd array matrix
