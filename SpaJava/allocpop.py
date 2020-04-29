@@ -9,6 +9,36 @@ import numpy as np
 from osgeo import gdal
 from osgeo import ogr
 from scipy import ndimage
+import statsmodels.api as sm
+
+def find_neighbor(layer, radius, row_number, col_number):
+    '''
+    find the slice within the radius of a cell
+    return a np.array
+    '''
+    len_x = len(layer)
+    len_y = len(layer[0])
+    chunk = [[layer[i][j] if  0 <= i < len_x and  0 <= j < len_y else 0
+              for j in range(col_number-radius, col_number+radius+1)]
+             for i in range(row_number-radius, row_number+radius+1)]
+    return np.array(chunk)
+
+def fig_show(figure_file, figsize=(10, 10), alpha=0.5, edgecolor='k'):
+    '''
+    plot the shapefile
+    '''
+    figure_file.plot(figsize=figsize, alpha=alpha, edgecolor=edgecolor)
+
+def raster_show(figure, logarithm=True):
+    '''
+    a picture show the 2D array
+    '''
+    if logarithm is True:
+        figure = np.where(np.isnan(figure), 0, figure)
+        plt.imshow(np.log(figure+1))
+    else:
+        figure = np.where(figure == 0, np.NaN, figure)
+        plt.imshow(figure)
 
 class JavaPolygonPrepare():
     '''
@@ -78,12 +108,6 @@ class JavaPolygonPrepare():
         builtup_shp = self.data_clean(builtup_shp)
         int_data = geopandas.overlay(java_shp, builtup_shp, how='intersection')
         return int_data
-
-    def fig_show(self, figure_file, figsize=(10, 10), alpha=0.5, edgecolor='k'):
-        '''
-        plot the shapefile
-        '''
-        figure_file.plot(figsize=figsize, alpha=alpha, edgecolor=edgecolor)
 
     def conv_raster(self, psize=100, shapefile=None, rasterloc=None, no_value=-999):
         '''
@@ -305,20 +329,79 @@ class JavaRasterAnalysis():
     '''
     def __init__(self):
         '''
-        if a function find the data doesn't satisfy our critirias,
-        return FALSE, otherwise, return either shp or raster, and
-        for raster, return the range of data (0:255, etc)
+        this function deals with a group of data
         '''
+        self.num = 100
+        self.x0_layer = np.random.randn(self.num, self.num)*100
+        self.x1_layer = np.random.randn(self.num, self.num)*100
+        self.x2_layer = np.random.randn(self.num, self.num)*100
+        self.y_layer = np.random.randn(self.num, self.num)*100
 
-    def derivate(self):
+    def ultra_random(self):
         '''
-        potential spatial ODE model
+        generate non-stationary np.array
         '''
+        lay_shape = self.x0_layer.shape
+        for _ in range(30):
+            self.x0_layer = self.x0_layer + np.random.randn(lay_shape[0], lay_shape[1])*20
 
-    def spatial_stats(self):
+    def pattern_creator(self, data=3, pattern=1):
+        '''
+        add some features to the array
+        '''
+        if data == 0:
+            layer = self.x0_layer
+        elif data == 1:
+            layer = self.x1_layer
+        elif data == 2:
+            layer = self.x2_layer
+        else:
+            layer = self.y_layer
+
+        if layer.shape[0] < 90:
+            print("impossible to run")
+        c_id0 = int(np.random.randint(layer.shape[0])/4)
+        c_id1 = int(np.random.randint(layer.shape[1])/4)
+        if pattern == 1:
+            for i in range(10):
+                layer[c_id0*2-i:c_id0*2+i, c_id1*2-i:c_id1*2+i] = \
+                    abs(layer[c_id0*2-i:c_id0*2+i, c_id1*2-i:c_id1*2+i])*1.1
+        elif pattern == 4:
+            layer[c_id0:c_id0+5, c_id1:c_id1+5] = \
+                abs(layer[c_id0:c_id0+5, c_id1:c_id1+5])*3
+            layer[c_id0*3:c_id0*3+5, c_id1:c_id1+5] = \
+                abs(layer[c_id0*3:c_id0*3+5, c_id1:c_id1+5])*3
+            layer[c_id0:c_id0+5, c_id1*3:c_id1*3+5] = \
+                abs(layer[c_id0:c_id0+5, c_id1*3:c_id1*3+5])*3
+            layer[c_id0*3:c_id0*3+5, c_id1*3:c_id1*3+5] = \
+                abs(layer[c_id0*3:c_id0*3+5, c_id1*3:c_id1*3+5])*3
+        if data == 0:
+            self.x0_layer = layer
+        elif data == 1:
+            self.x1_layer = layer
+        elif data == 2:
+            self.x2_layer = layer
+        else:
+            self.y_layer = layer
+
+    def regression_space(self, radius=2):
         '''
         potential spatial statistics
         '''
+        n_layer = self.x0_layer.shape[0]
+        m_layer = self.x0_layer.shape[1]
+        result_layer0 = np.zeros((n_layer, m_layer))
+        result_layer1 = np.zeros((n_layer, m_layer))
+        num_adj = (radius*2+1)**2
+        for i in range(n_layer):
+            for j in range(m_layer):
+                cells_y = find_neighbor(self.y_layer, radius, i, j).reshape(num_adj)
+                cells_x0 = find_neighbor(self.x0_layer, radius, i, j).reshape(num_adj)
+                cells_x1 = find_neighbor(self.x1_layer, radius, i, j).reshape(num_adj)
+                model = sm.OLS(cells_y, np.vstack((cells_x0, cells_x1)).transpose()).fit()
+                result_layer0[i, j] = model.params[0]
+                result_layer1[i, j] = model.params[1]
+        return (result_layer0, result_layer1)
 
 if __name__ == "__main__":
     print('it is on')

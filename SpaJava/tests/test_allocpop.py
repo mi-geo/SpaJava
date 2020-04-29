@@ -1,8 +1,8 @@
 '''
 test the allocpop.py file with pytests
 '''
-import pytest
 from pathlib import Path
+import pytest
 from SpaJava import allocpop
 
 TEST = allocpop.JavaPolygonPrepare()
